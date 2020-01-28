@@ -5,6 +5,7 @@ export PATH
 #   System Required:  CentOS 6,7, Debian, Ubuntu                  #
 #   Description: One click Install ShadowsocksR Server            #
 #   Author: Teddysun <i@teddysun.com>                             #
+#   Edited: B14ckP4nd4				                              #
 #   Thanks: @breakwa11 <https://twitter.com/breakwa11>            #
 #   Intro:  https://shadowsocks.be/9.html                         #
 #=================================================================#
@@ -171,148 +172,19 @@ get_ip(){
     [ ! -z ${IP} ] && echo ${IP} || echo
 }
 
-get_char(){
-    SAVEDSTTY=`stty -g`
-    stty -echo
-    stty cbreak
-    dd if=/dev/tty bs=1 count=1 2> /dev/null
-    stty -raw
-    stty echo
-    stty $SAVEDSTTY
-}
 
-# Pre-installation settings
-pre_install(){
-    if check_sys packageManager yum || check_sys packageManager apt; then
-        # Not support CentOS 5
-        if centosversion 5; then
-            echo -e "$[{red}Error${plain}] Not supported CentOS 5, please change to CentOS 6+/Debian 7+/Ubuntu 12+ and try again."
-            exit 1
-        fi
-    else
-        echo -e "[${red}Error${plain}] Your OS is not supported. please change OS to CentOS/Debian/Ubuntu and try again."
-        exit 1
-    fi
-    # Set ShadowsocksR config password
-    echo "Please enter password for ShadowsocksR:"
-    # read -p "(Default password: teddysun.com):" shadowsockspwd
-    # [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    
 	shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
 	shadowsockspwd = "${tmp_pass:0:10}"
-    echo
-    echo "---------------------------"
-    echo "password = ${shadowsockspwd}"
-    echo "---------------------------"
-    echo
-    # Set ShadowsocksR config port
-    while true
-    do
-    dport=$(shuf -i 9000-19999 -n 1)
-    echo -e "Please enter a port for ShadowsocksR [1-65535]"
-    # read -p "(Default port: ${dport}):" shadowsocksport
-    # [ -z "${shadowsocksport}" ] && shadowsocksport=${dport}
+	
 	shadowsocksport = 443
-    expr ${shadowsocksport} + 1 &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
-            echo
-            echo "---------------------------"
-            echo "port = ${shadowsocksport}"
-            echo "---------------------------"
-            echo
-            break
-        fi
-    fi
-    echo -e "[${red}Error${plain}] Please enter a correct number [1-65535]"
-    done
-
-    # Set shadowsocksR config stream ciphers
-    while true
-    do
-    echo -e "Please select stream cipher for ShadowsocksR:"
-    for ((i=1;i<=${#ciphers[@]};i++ )); do
-        hint="${ciphers[$i-1]}"
-        echo -e "${green}${i}${plain}) ${hint}"
-    done
-    read -p "Which cipher you'd select(Default: ${ciphers[1]}):" pick
-    [ -z "$pick" ] && pick=2
-    expr ${pick} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Please enter a number"
-        continue
-    fi
-    if [[ "$pick" -lt 1 || "$pick" -gt ${#ciphers[@]} ]]; then
-        echo -e "[${red}Error${plain}] Please enter a number between 1 and ${#ciphers[@]}"
-        continue
-    fi
-    shadowsockscipher=${ciphers[$pick-1]}
-    echo
-    echo "---------------------------"
-    echo "cipher = ${shadowsockscipher}"
-    echo "---------------------------"
-    echo
-    break
-    done
-
-    # Set shadowsocksR config protocol
-    while true
-    do
-    echo -e "Please select protocol for ShadowsocksR:"
-    for ((i=1;i<=${#protocols[@]};i++ )); do
-        hint="${protocols[$i-1]}"
-        echo -e "${green}${i}${plain}) ${hint}"
-    done
-    read -p "Which protocol you'd select(Default: ${protocols[0]}):" protocol
-    [ -z "$protocol" ] && protocol=1
-    expr ${protocol} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number"
-        continue
-    fi
-    if [[ "$protocol" -lt 1 || "$protocol" -gt ${#protocols[@]} ]]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#protocols[@]}"
-        continue
-    fi
-    shadowsockprotocol=${protocols[$protocol-1]}
-    echo
-    echo "---------------------------"
-    echo "protocol = ${shadowsockprotocol}"
-    echo "---------------------------"
-    echo
-    break
-    done
-
-    # Set shadowsocksR config obfs
-    while true
-    do
-    echo -e "Please select obfs for ShadowsocksR:"
-    for ((i=1;i<=${#obfs[@]};i++ )); do
-        hint="${obfs[$i-1]}"
-        echo -e "${green}${i}${plain}) ${hint}"
-    done
-    read -p "Which obfs you'd select(Default: ${obfs[0]}):" r_obfs
-    [ -z "$r_obfs" ] && r_obfs=1
-    expr ${r_obfs} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number"
-        continue
-    fi
-    if [[ "$r_obfs" -lt 1 || "$r_obfs" -gt ${#obfs[@]} ]]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#obfs[@]}"
-        continue
-    fi
-    shadowsockobfs=${obfs[$r_obfs-1]}
-    echo
-    echo "---------------------------"
-    echo "obfs = ${shadowsockobfs}"
-    echo "---------------------------"
-    echo
-    break
-    done
+	shadowsockobfs='http_simple_compatible'
+	shadowsockprotocol = 'origin'
+	shadowsockscipher='chacha20'
 
     echo
-    echo "Press any key to start...or Press Ctrl+C to cancel"
-    char=`get_char`
+    # echo "Press any key to start...or Press Ctrl+C to cancel"
+    # char=`get_char`
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
@@ -380,6 +252,7 @@ firewall_set(){
     fi
     echo -e "[${green}Info${plain}] firewall set completed..."
 }
+
 
 # Config ShadowsocksR
 config_shadowsocks(){
