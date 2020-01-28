@@ -83,9 +83,9 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 
-shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
-shadowsockspwd = "${shadowsockspwd:0:10}"
-shadowsocksport = 443
+shadowsockspwd=`cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
+shadowsockspwd="${shadowsockspwd:0:10}"
+shadowsocksport=443
 shadowsockscipher='chacha20'
 shadowsockprotocol='origin'
 shadowsockobfs='http_simple_compatible'
