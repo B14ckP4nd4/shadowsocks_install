@@ -195,8 +195,14 @@ pre_install(){
     fi
     # Set ShadowsocksR config password
     echo "Please enter password for ShadowsocksR:"
-    read -p "(Default password: teddysun.com):" shadowsockspwd
-    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    # read -p "(Default password: teddysun.com):" shadowsockspwd
+    # [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+	
+	# Edited by blackPanda
+	shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
+	shadowsockspwd = "${tmp_pass:0:10}"
+	# Edited by blackPanda
+	
     echo
     echo "---------------------------"
     echo "password = ${shadowsockspwd}"
@@ -207,8 +213,14 @@ pre_install(){
     do
     dport=$(shuf -i 9000-19999 -n 1)
     echo -e "Please enter a port for ShadowsocksR [1-65535]"
-    read -p "(Default port: ${dport}):" shadowsocksport
-    [ -z "${shadowsocksport}" ] && shadowsocksport=${dport}
+    # read -p "(Default port: ${dport}):" shadowsocksport
+    # [ -z "${shadowsocksport}" ] && shadowsocksport=${dport}
+	
+	# Edited by blackPanda
+	shadowsocksport = 443
+	# Edited by blackPanda
+	
+	
     expr ${shadowsocksport} + 1 &>/dev/null
     if [ $? -eq 0 ]; then
         if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
@@ -231,18 +243,24 @@ pre_install(){
         hint="${ciphers[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
     done
-    read -p "Which cipher you'd select(Default: ${ciphers[1]}):" pick
-    [ -z "$pick" ] && pick=2
-    expr ${pick} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Please enter a number"
-        continue
-    fi
-    if [[ "$pick" -lt 1 || "$pick" -gt ${#ciphers[@]} ]]; then
-        echo -e "[${red}Error${plain}] Please enter a number between 1 and ${#ciphers[@]}"
-        continue
-    fi
-    shadowsockscipher=${ciphers[$pick-1]}
+    # read -p "Which cipher you'd select(Default: ${ciphers[1]}):" pick
+    # [ -z "$pick" ] && pick=2
+	
+	
+    # expr ${pick} + 1 &>/dev/null
+    # if [ $? -ne 0 ]; then
+        # echo -e "[${red}Error${plain}] Please enter a number"
+        # continue
+    # fi
+    # if [[ "$pick" -lt 1 || "$pick" -gt ${#ciphers[@]} ]]; then
+        # echo -e "[${red}Error${plain}] Please enter a number between 1 and ${#ciphers[@]}"
+        # continue
+    # fi
+	
+    # shadowsockscipher=${ciphers[$pick-1]}
+	# Edited by blackPanda
+    shadowsockscipher='chacha20'
+	
     echo
     echo "---------------------------"
     echo "cipher = ${shadowsockscipher}"
@@ -252,25 +270,27 @@ pre_install(){
     done
 
     # Set shadowsocksR config protocol
-    while true
-    do
-    echo -e "Please select protocol for ShadowsocksR:"
-    for ((i=1;i<=${#protocols[@]};i++ )); do
-        hint="${protocols[$i-1]}"
-        echo -e "${green}${i}${plain}) ${hint}"
-    done
-    read -p "Which protocol you'd select(Default: ${protocols[0]}):" protocol
-    [ -z "$protocol" ] && protocol=1
-    expr ${protocol} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number"
-        continue
-    fi
-    if [[ "$protocol" -lt 1 || "$protocol" -gt ${#protocols[@]} ]]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#protocols[@]}"
-        continue
-    fi
-    shadowsockprotocol=${protocols[$protocol-1]}
+    # while true
+    # do
+    # echo -e "Please select protocol for ShadowsocksR:"
+    # for ((i=1;i<=${#protocols[@]};i++ )); do
+        # hint="${protocols[$i-1]}"
+        # echo -e "${green}${i}${plain}) ${hint}"
+    # done
+    # read -p "Which protocol you'd select(Default: ${protocols[0]}):" protocol
+    # [ -z "$protocol" ] && protocol=1
+    # expr ${protocol} + 1 &>/dev/null
+    # if [ $? -ne 0 ]; then
+        # echo -e "[${red}Error${plain}] Input error, please input a number"
+        # continue
+    # fi
+    # if [[ "$protocol" -lt 1 || "$protocol" -gt ${#protocols[@]} ]]; then
+        # echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#protocols[@]}"
+        # continue
+    # fi
+    # shadowsockprotocol=${protocols[$protocol-1]}
+	# Edited by blackPanda
+	shadowsockprotocol = 'origin'
     echo
     echo "---------------------------"
     echo "protocol = ${shadowsockprotocol}"
@@ -280,25 +300,30 @@ pre_install(){
     done
 
     # Set shadowsocksR config obfs
-    while true
-    do
-    echo -e "Please select obfs for ShadowsocksR:"
-    for ((i=1;i<=${#obfs[@]};i++ )); do
-        hint="${obfs[$i-1]}"
-        echo -e "${green}${i}${plain}) ${hint}"
-    done
-    read -p "Which obfs you'd select(Default: ${obfs[0]}):" r_obfs
-    [ -z "$r_obfs" ] && r_obfs=1
-    expr ${r_obfs} + 1 &>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number"
-        continue
-    fi
-    if [[ "$r_obfs" -lt 1 || "$r_obfs" -gt ${#obfs[@]} ]]; then
-        echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#obfs[@]}"
-        continue
-    fi
-    shadowsockobfs=${obfs[$r_obfs-1]}
+    # while true
+    # do
+    # echo -e "Please select obfs for ShadowsocksR:"
+    # for ((i=1;i<=${#obfs[@]};i++ )); do
+        # hint="${obfs[$i-1]}"
+        # echo -e "${green}${i}${plain}) ${hint}"
+    # done
+    # read -p "Which obfs you'd select(Default: ${obfs[0]}):" r_obfs
+    # [ -z "$r_obfs" ] && r_obfs=1
+    # expr ${r_obfs} + 1 &>/dev/null
+    # if [ $? -ne 0 ]; then
+        # echo -e "[${red}Error${plain}] Input error, please input a number"
+        # continue
+    # fi
+    # if [[ "$r_obfs" -lt 1 || "$r_obfs" -gt ${#obfs[@]} ]]; then
+        # echo -e "[${red}Error${plain}] Input error, please input a number between 1 and ${#obfs[@]}"
+        # continue
+    # fi
+    # shadowsockobfs=${obfs[$r_obfs-1]}
+	
+	# Edited by blackPanda
+	shadowsockobfs='http_simple_compatible'
+	
+	
     echo
     echo "---------------------------"
     echo "obfs = ${shadowsockobfs}"
@@ -308,8 +333,8 @@ pre_install(){
     done
 
     echo
-    echo "Press any key to start...or Press Ctrl+C to cancel"
-    char=`get_char`
+    # echo "Press any key to start...or Press Ctrl+C to cancel"
+    # char=`get_char`
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
