@@ -5,7 +5,6 @@ export PATH
 #   System Required:  CentOS 6,7, Debian, Ubuntu                  #
 #   Description: One click Install ShadowsocksR Server            #
 #   Author: Teddysun <i@teddysun.com>                             #
-#   Edited: B14ckP4nd4				                              #
 #   Thanks: @breakwa11 <https://twitter.com/breakwa11>            #
 #   Intro:  https://shadowsocks.be/9.html                         #
 #=================================================================#
@@ -24,6 +23,17 @@ libsodium_file="libsodium-1.0.17"
 libsodium_url="https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz"
 shadowsocks_r_file="shadowsocksr-3.2.2"
 shadowsocks_r_url="https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz"
+
+shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
+shadowsockspwd = "${tmp_pass:0:10}"
+
+shadowsocksport = 443
+
+shadowsockscipher='chacha20'
+
+shadowsockprotocol='origin'
+
+shadowsockobfs='http_simple_compatible'
 
 #Current folder
 cur_dir=`pwd`
@@ -172,18 +182,29 @@ get_ip(){
     [ ! -z ${IP} ] && echo ${IP} || echo
 }
 
-pre_install(){
-	shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
-	shadowsockspwd = "${tmp_pass:0:10}"
-	
-	shadowsocksport = 443
-	shadowsockobfs='http_simple_compatible'
-	shadowsockprotocol = 'origin'
-	shadowsockscipher='chacha20'
+get_char(){
+    SAVEDSTTY=`stty -g`
+    stty -echo
+    stty cbreak
+    dd if=/dev/tty bs=1 count=1 2> /dev/null
+    stty -raw
+    stty echo
+    stty $SAVEDSTTY
+}
 
-    echo
-    # echo "Press any key to start...or Press Ctrl+C to cancel"
-    # char=`get_char`
+# Pre-installation settings
+pre_install(){
+    if check_sys packageManager yum || check_sys packageManager apt; then
+        # Not support CentOS 5
+        if centosversion 5; then
+            echo -e "$[{red}Error${plain}] Not supported CentOS 5, please change to CentOS 6+/Debian 7+/Ubuntu 12+ and try again."
+            exit 1
+        fi
+    else
+        echo -e "[${red}Error${plain}] Your OS is not supported. please change OS to CentOS/Debian/Ubuntu and try again."
+        exit 1
+    fi
+
     # Install necessary dependencies
     if check_sys packageManager yum; then
         yum install -y python python-devel python-setuptools openssl openssl-devel curl wget unzip gcc automake autoconf make libtool
@@ -251,7 +272,6 @@ firewall_set(){
     fi
     echo -e "[${green}Info${plain}] firewall set completed..."
 }
-
 
 # Config ShadowsocksR
 config_shadowsocks(){
