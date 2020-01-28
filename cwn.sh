@@ -24,16 +24,6 @@ libsodium_url="https://github.com/jedisct1/libsodium/releases/download/1.0.17/li
 shadowsocks_r_file="shadowsocksr-3.2.2"
 shadowsocks_r_url="https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz"
 
-shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
-shadowsockspwd = "${tmp_pass:0:10}"
-
-shadowsocksport = 443
-
-shadowsockscipher='chacha20'
-
-shadowsockprotocol='origin'
-
-shadowsockobfs='http_simple_compatible'
 
 #Current folder
 cur_dir=`pwd`
@@ -91,6 +81,14 @@ red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
+
+
+shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
+shadowsockspwd = "${shadowsockspwd:0:10}"
+shadowsocksport = 443
+shadowsockscipher='chacha20'
+shadowsockprotocol='origin'
+shadowsockobfs='http_simple_compatible'
 
 # Make sure only root can run our script
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] This script must be run as root!" && exit 1
