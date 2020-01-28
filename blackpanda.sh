@@ -172,7 +172,7 @@ get_ip(){
     [ ! -z ${IP} ] && echo ${IP} || echo
 }
 
-
+pre_install(){
     
 	shadowsockspwd = `cat /dev/urandom | tr -dc 'a-zA-Z' | head -c 8`
 	shadowsockspwd = "${tmp_pass:0:10}"
